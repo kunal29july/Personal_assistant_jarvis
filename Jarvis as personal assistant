@@ -1,0 +1,118 @@
+#sbse phle hum speak function pr kaam krege 
+#kyu ki jo hum bolege wo wh sunega
+import pyttsx3
+import pyaudio
+import datetime  #already hota ,no need to install
+import speech_recognition as sr
+import wikipedia
+import webbrowser #youtube ke liye and other internet things
+import os #pc related stuff ex.music
+import smtplib #for sending email
+engine= pyttsx3.init('sapi5') #voice ko lene k liye,inbuild voice hoti h.;
+voices=engine.getProperty('voices')
+#print(voices) #ye bta rha ki 2 voice hai apne pass[<pyttsx3.voice.Voice object at 0x00000044170F2F10>, <pyttsx3.voice.Voice object at 0x00000044170F28B0>, <pyttsx3.voice.Voice object at 0x00000044170F4E50>]
+#print(voices[0].id) #DAVID_11.0  (male) wali voice
+#print(voices[1].id) #HAZEL_11.0 (female) wali voice
+
+engine.setProperty('voices',voices[1].id)
+def speak(audio):#bolne ke liye
+    engine.say(audio)#jo audio dia usko enginbe bolega
+    engine.runAndWait()#function hota
+
+def wishme():#wish krega apne ko
+    hour= int(datetime.datetime.now().hour) #hours :) mil jayega yaha se
+    if hour>=0 and hour<12:
+        speak("Good Morning")
+    else:
+        if hour>=12 and hour<18:
+            speak("Good Afternoon")
+        else:
+            speak("Good evening") 
+    speak("I am jarvis Sir, please tell me how may i help you ")
+
+def takecommand():#jo bola hai wo string me return kr ke deta hai
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("listening sir...")
+        r.pause_threshold = 1
+        audio = r.listen(source, timeout=3, phrase_time_limit=5)
+    try:
+        print("recognizing....!!")
+        query = r.recognize_google(audio, language="en-in")
+        print(f"user said:{query}")
+
+    except sr.UnknownValueError:
+        print('Sorry sir! I did not get that! say that again please')
+        return 'None'
+    return query
+
+    def sendemail(to,content):
+        server=smtplib.SMTP('smntp.gmail.com',587)
+        server.ehlo()
+        server.starttls()
+        server.login("your email id",'your password')
+        server.sendmail('youremail@gmail.com',to,content)
+        server.close()
+
+
+if __name__=="__main__":
+    wishme()
+    while(True):
+        query=takecommand().lower()
+
+    #logic for executing task
+        if 'wikipedia' in query:
+            speak("searching wikipedia...")
+            query=query.replace("wikipedia", "")
+            results=wikipedia.summary(query,sentences=2)
+            speak("According to wikipedia")
+            print(results)
+            speak(results)
+        elif "open youtube" in query:
+            webbrowser.open("youtube.com")
+
+        elif "open stackoverflow" in query:
+            webbrowser.open("stackoverflow.com")
+        
+        elif "open leetcode" in query:
+            webbrowser.open("leetocode.com")
+
+        elif "open geeks for geeks" in query:
+            webbrowser.open("geeksforgeeks.com")
+
+        elif "open stackoverflow" in query:
+            webbrowser.open("stackoverflow.com")
+
+        elif "play music" in query:
+            music_dir= 'C:\\Users\\Kunal Mahajan\\Music\\Playlists'
+            songs=os.listdir(music_dir)
+            print(songs) #print kr dega sare song
+            os.startfile(os.path.join(music_dir,songs[0]))#music_dir ko song 0 se milaya
+
+        elif " the time" in query:
+            strTime=datetime.datetime.now().strftime("%H:%M:%S")
+            print(strTime)
+            speak(f"sir,the time is{strTime}")
+        elif "open calculator" in query:
+            webbrowser.open("calculator.com")
+
+        elif 'email to kunal mahajan' in query:#
+            try:
+                speak("what shouold i say?")
+                content=takecommand()
+                to="target email id" 
+                sendemail(to,content)
+                speak("email has been send")
+            except exception as  e:
+                #print(e)
+                speak("sorry sir, due to some technical issue,i am not able to send email at moment ") 
+
+        elif "terminate" in query:
+            speak("terminating sir, bye ,have a nice day")
+            break
+
+                      
+
+
+        
+ 
